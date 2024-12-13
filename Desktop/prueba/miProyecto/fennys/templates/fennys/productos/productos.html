@@ -1,0 +1,26 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Productos{% endblock %}
+{% include 'navbar.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <!-- Aquí se utiliza el campo imagen.url para obtener la URL de la imagen -->
+                <div class="card-body">
+                    <img src="{{ producto.foto.url }}" class="card-img-top" alt="Imagen de {{ producto.nombre }}">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text">{{ producto.descripcion }}</p>
+                    <p class="card-text">Precio: ${{ producto.precio }}</p>
+                    <a href="/" class="btn btn-primary">Ver más</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Bienvenido a Mi Tienda</h1>
+    <p class="text-center">Aquí puedes encontrar los mejores productos a los mejores precios.</p>
+
+    <!-- Ejemplo de un slider con Bootstrap -->
+    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'fennys/img/descarga.jpg' %}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'fennys/img/descarga2.jpg' %}" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'fennys/img/descarga3.jpg' %}" class="d-block w-100" alt="...">
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

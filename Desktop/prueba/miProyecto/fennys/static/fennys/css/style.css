@@ -1,0 +1,28 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+.navbar {
+    border-bottom: 2px solid #ddd;
+}
+
+h1 {
+    color: #343a40;
+    font-size: 3rem;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.carousel-item img {
+    height: 500px;
+    object-fit: cover;
+}

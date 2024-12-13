@@ -1,0 +1,35 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Registrar{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" name="nombre" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password1" class="form-label">Contraseña:</label>
+                <input type="password" class="form-control" name="password1" required>
+            </div>
+            <div class="mb-3">
+                <label for="password2" class="form-label">Repetir Contraseña:</label>
+                <input type="password" class="form-control" name="password2" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+        <a href="{% url 'login' %}">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+{% endblock %}
