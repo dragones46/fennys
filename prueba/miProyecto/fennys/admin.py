@@ -4,10 +4,18 @@ from django.utils.html import mark_safe
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre', 'email', 'rol', 'estado', 'foto']
+    list_display = ['id', 'nombre', 'email', 'rol', 'estado', 'ver_foto', 'cedula', 'fecha_nacimiento']
     search_fields = ['nombre', 'email']
     list_filter = ['rol', 'estado']
     list_editable = ['rol', 'estado']
+
+    def ver_foto(self, obj):
+        if obj.foto:
+            return mark_safe(f"<a href='{obj.foto.url}'><img src='{obj.foto.url}' width='15%'></a>")
+        return ""
+
+    def cedula(self, obj):
+        return obj.cedula
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):

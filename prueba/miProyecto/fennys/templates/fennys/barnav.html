@@ -19,13 +19,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
     
     <!-- Aquí puedes incluir tu CSS personalizado -->
     <link href="{% static './fennys/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
     <!-- Barra de navegación -->
-     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img src="{% static 'fennys/img/tienda.jpg' %}" alt="Logo" style="width: 50px; height: auto;"></a>
@@ -46,27 +51,64 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/lista_productos">Lista de Productos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="carrito">
+                            <i class="bi bi-cart"></i>
+                            <span id="cantidad-carrito">{{ pedido.cantidad_total }}</span>
+                        </a>
+                    </li>
                 </ul>
                 <div class="ml-auto d-flex align-items-center">
-                    <ul class="items-barra">
-                        {% if user %}
-                            <li>
-                                <a href="{% url 'ver_perfil' %}">
-                                    {% if user.foto %}
-                                        <img src="{{ user.foto.url }}" alt="FotoUsuario" width="45px" height="45px" class="rounded-circle">
+                    <ul class="navbar-nav">
+                        {% if request.session.logueo %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {% if request.session.logueo.foto %}
+                                        <img src="{{ request.session.logueo.foto }}" alt="FotoUsuario" width="45px" height="45px" class="rounded-circle">
                                     {% else %}
-                                        <img src="{% static 'Oasis/img/default_user.png' %}" alt="LogoUsuario" width="45px" height="45px">
+                                        <img src="{% static 'fennys/img/default.png' %}" alt="LogoUsuario" width="45px" height="45px">
                                     {% endif %}
                                 </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{% url 'ver_perfil' %}">Ver Perfil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                                </ul>
                             </li>
                         {% else %}
-                            <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
-                            <li><a href="{% url 'registro' %}">Registrarse</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
+                            </li>
                         {% endif %}
                     </ul>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- Mensajes de Django -->
+    {% if messages %}
+    <div id="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+        // Configura el temporizador para cerrar los mensajes después de 1 minuto (60000 ms)
+        setTimeout(function() {
+            const messages = document.getElementById('messages-container');
+            if (messages) {
+                messages.innerHTML = ''; // Elimina todo el contenido de mensajes
+            }
+        }, 60000); // 1 minuto
+    </script>
 
     <!-- Contenido de la página -->
     {% block content %}

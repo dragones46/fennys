@@ -1,0 +1,113 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Mi Perfil{% endblock %}
+
+{% block content %}
+  <div class="card mb-3 mt-5 w-100 ml-0 mr-0 mx-auto" style="max-width: 700px; margin-top: 2.5em;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        {% if user.foto %}
+          <img src="{{ user.foto.url }}" class="img-fluid rounded-circle" alt="Foto de perfil" style="height: 200px;">
+        {% else %}
+          <img src="{% static 'fennys/img/default.png' %}" class="img-fluid rounded-circle" alt="Foto de perfil predeterminada" style="height: 200px;">
+        {% endif %}
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <div class="card-title d-flex justify-content-between">
+            <h5 class="card-title fw-bold">{{ user.nombre }}</h5>
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editarPerfil"><i class="bi bi-pencil"></i></button>
+          </div>
+          <p class="card-text"><small class="text-body-secondary">{{ user.get_rol_display }}</small></p>
+          <p class="card-text">
+            <strong>Correo:</strong> {{ user.email }} <br>
+            <strong>Cedula:</strong> {{ user.cedula }} <br>
+            <strong>Fecha Nacimiento:</strong> {{ user.fecha_nacimiento }}
+          </p>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-left: 3%; margin-right: 3%;">
+                <a class="btn btn-primary" data-toggle="modal" data-target="#cambiarContrasena">Cambiar contraseña</a>
+                <a href="{% url 'logout' %}" type="button" class="btn btn-danger"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar perfil -->
+<div class="modal fade" id="editarPerfil" tabindex="-1" role="dialog" aria-labelledby="editarPerfilLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="editarPerfilLabel">Editar perfil</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>          
+          </div>
+          <div class="modal-body">
+              <form class="formulario" action="{% url 'editar_perfil' user.id %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="nombre" class="form-label">Nombre</label>
+                      <input type="text" class="form-control" id="nombre" name="nombre" value="{{ user.nombre }}" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="cedula" class="form-label">Cédula</label>
+                      <input type="number" class="form-control" id="cedula" name="cedula" value="{{ user.cedula }}" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                      <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" value="{{ user.fecha_nacimiento|date:'Y-m-d' }}" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="foto_nueva" class="form-label">Cambiar foto de perfil</label>
+                      <input class="form-control" type="file" id="foto_nueva" name="foto_nueva">
+                  </div>
+                  <button type="submit" class="btn btn-success">Editar Perfil</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+ <!-- Modal para cambiar contraseña -->
+ <div class="modal fade" id="cambiarContrasena" tabindex="-1" role="dialog" aria-labelledby="cambiarContrasenaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="cambiarContrasenaLabel">Cambiar contraseña</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form class="formulario" action="{% url 'cambiar_clave' %}" method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="clave" class="form-label">Contraseña actual</label>
+                      <input type="password" class="form-control" id="clave" name="clave" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="nueva1" class="form-label">Contraseña nueva</label>
+                      <input type="password" class="form-control" id="nueva1" name="nueva1" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="nueva2" class="form-label">Repetir contraseña</label>
+                      <input type="password" class="form-control" id="nueva2" name="nueva2" required>
+                  </div>
+                  <button type="submit" class="btn btn-success">Cambiar contraseña</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Editar Perfil{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" name="nombre" value="{{ user.nombre }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="cedula" class="form-label">Cédula:</label>
+                <input type="number" class="form-control" name="cedula" value="{{ user.cedula }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
+                <input type="date" class="form-control" name="fechaNacimiento" value="{{ user.fecha_nacimiento|date:'Y-m-d' }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="foto_nueva" class="form-label">Cambiar Foto de Perfil:</label>
+                <input type="file" class="form-control" name="foto_nueva">
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+    </div>
+{% endblock %}
