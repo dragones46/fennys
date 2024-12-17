@@ -6,13 +6,13 @@
 {% block content %}
   <div class="card mb-3 mt-5 w-100 ml-0 mr-0 mx-auto" style="max-width: 700px; margin-top: 2.5em;">
     <div class="row g-0">
-      <div class="col-md-4">
+      <div class="col-md-4 d-flex justify-content-center align-items-center">
         {% if user.foto %}
-          <img src="{{ user.foto.url }}" class="img-fluid rounded-circle" alt="Foto de perfil" style="height: 200px;">
+        <img src="{{ user.foto.url }}" class="img-fluid rounded-circle" alt="Foto de perfil" style="height: 200px; margin-top: 20px;">
         {% else %}
-          <img src="{% static 'fennys/img/default.png' %}" class="img-fluid rounded-circle" alt="Foto de perfil predeterminada" style="height: 200px;">
+        <img src="{% static 'fennys/img/default.png' %}" class="img-fluid rounded-circle" alt="Foto de perfil predeterminada" style="height: 200px; margin-top: 20px;">
         {% endif %}
-      </div>
+    </div>    
       <div class="col-md-8">
         <div class="card-body">
           <div class="card-title d-flex justify-content-between">
@@ -22,7 +22,7 @@
           <p class="card-text"><small class="text-body-secondary">{{ user.get_rol_display }}</small></p>
           <p class="card-text">
             <strong>Correo:</strong> {{ user.email }} <br>
-            <strong>Cedula:</strong> {{ user.cedula }} <br>
+            <strong>Cédula:</strong> {{ user.cedula }} <br>
             <strong>Fecha Nacimiento:</strong> {{ user.fecha_nacimiento }}
           </p>
         </div>
@@ -44,7 +44,7 @@
               <h5 class="modal-title" id="editarPerfilLabel">Editar perfil</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-            </button>          
+            </button>
           </div>
           <div class="modal-body">
               <form class="formulario" action="{% url 'editar_perfil' user.id %}" method="post" enctype="multipart/form-data">
@@ -76,9 +76,8 @@
   </div>
 </div>
 
-
- <!-- Modal para cambiar contraseña -->
- <div class="modal fade" id="cambiarContrasena" tabindex="-1" role="dialog" aria-labelledby="cambiarContrasenaLabel" aria-hidden="true">
+<!-- Modal para cambiar contraseña -->
+<div class="modal fade" id="cambiarContrasena" tabindex="-1" role="dialog" aria-labelledby="cambiarContrasenaLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header">
@@ -108,6 +107,5 @@
       </div>
   </div>
 </div>
-
 
 {% endblock %}

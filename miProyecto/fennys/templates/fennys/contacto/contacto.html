@@ -2,25 +2,47 @@
 {% load static %}
 
 {% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <h1 class="text-center mb-4">Formulario de Contacto</h1>
 
 
-<div class="container mt-4">
-    <h1>Contacto</h1>
-    <form action="/enviar-contacto/" method="POST">
+    <!-- Formulario -->
+    <form action="{% url 'contacto' %}" method="POST">
         {% csrf_token %}
+        
+        <!-- Campo de nombre -->
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="nombre" name="nombre" required>
         </div>
+        
+        <!-- Campo de correo -->
         <div class="mb-3">
             <label for="correo" class="form-label">Correo Electrónico</label>
             <input type="email" class="form-control" id="correo" name="correo" required>
         </div>
+
+        <!-- Campo de tipo de mensaje (Exigencias, Reclamos, Felicitaciones) -->
+        <div class="mb-3">
+            <label for="tipo_mensaje" class="form-label">Tipo de Mensaje</label>
+            <select class="form-control" id="tipo_mensaje" name="tipo_mensaje" required>
+                <option value="Exigencia">Exigencia</option>
+                <option value="Reclamo">Reclamo</option>
+                <option value="Felicitación">Felicitación</option>
+                <option value="Sugerencia">Sugerencia</option>
+            </select>
+        </div>
+        
+        <!-- Campo de mensaje -->
         <div class="mb-3">
             <label for="mensaje" class="form-label">Mensaje</label>
-            <textarea class="form-control" id="mensaje" name="mensaje" rows="3" required></textarea>
+            <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
+        
+        <!-- Botón de envío con estilo -->
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Enviar</button>
+        </div>
     </form>
 </div>
 

@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'fennys'
+    'django.contrib.humanize',
+    'rest_framework',
+    'fennys',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +128,17 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# Configuración de correo en Django (usar Gmail como ejemplo)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'deivysarrazola@gmail.com'  # Tu correo de Gmail
+EMAIL_HOST_PASSWORD = 'uadc rvge srhj asmr'  # Tu contraseña de Gmail o contraseña de aplicación
+
+# Correo al que se enviarán los mensajes de contacto
+CONTACT_EMAIL = 'deivy273@gmail.com'  # Correo de destino
+

@@ -1,0 +1,79 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+
+{% block titulo %}Carrito de Compras{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Carrito de Compras</h1>
+    {% if carrito %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, item in carrito.items %}
+                    <tr>
+                        <td>{{ item.nombre }}</td>
+                        <td>
+                            <input type="number" class="form-control cantidad" data-key="{{ key }}" data-precio="{{ item.precio | floatformat:0 }}" value="{{ item.cantidad | floatformat:0 }}" min="1" max="{{ item.inventario | floatformat:0 }}" style="width: 50px;">
+                        </td>
+                        <td>${{ item.precio | floatformat:0 }}</td>
+                        <td class="subtotal">${{ item.subtotal | floatformat:0 }}</td>
+                        <td>
+                            <a href="{% url 'eliminar_producto' key %}" class="btn btn-secondary">X</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end">Total:</td>
+                    <td id="total_carrito">${{ total_carrito | floatformat:0 }}</td>
+                    <td>
+                        <a href="{% url 'pagar' %}" class="btn btn-success">Pagar</a>
+                        <a href="{% url 'borrar_todo' %}" class="btn btn-warning">Borrar todo</a>
+                        <a href="{% url 'cancelar_todo' %}" class="btn btn-danger">Cancelar todo</a>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    {% else %}
+        <p class="text-center">El carrito está vacío.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cantidadInputs = document.querySelectorAll('.cantidad');
+        const totalCarritoElement = document.getElementById('total_carrito');
+
+        cantidadInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const key = this.getAttribute('data-key');
+                const precio = parseFloat(this.getAttribute('data-precio'));
+                const cantidad = parseInt(this.value);
+                const subtotal = precio * cantidad;
+
+                // Actualizar el subtotal en la fila correspondiente
+                this.closest('tr').querySelector('.subtotal').textContent = `$${parseFloat(subtotal).toFixed(2).replace(/\.00$/, '')}`;
+
+                // Actualizar el total del carrito
+                let totalCarrito = 0;
+                cantidadInputs.forEach(input => {
+                    const precio = parseFloat(input.getAttribute('data-precio'));
+                    const cantidad = parseInt(input.value);
+                    totalCarrito += precio * cantidad;
+                });
+                totalCarritoElement.textContent = `$${parseFloat(totalCarrito).toFixed(2).replace(/\.00$/, '')}`;
+            });
+        });
+    });
+</script>
+{% endblock %}

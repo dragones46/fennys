@@ -14,7 +14,12 @@ urlpatterns = [
     path('ver_perfil/', views.ver_perfil, name='ver_perfil'),
     path('editar_perfil/<int:user_id>/', views.editar_perfil, name='editar_perfil'),
     path('cambiar_clave/', views.cambiar_clave, name='cambiar_clave'),
-    path('pagar/', views.pagar, name='pagar'),
+    path('pagar/', views.pagar, name='pagar'),  # Ajusta esta línea
     path('cancelar_pedido/<int:pedido_id>/', views.cancelar_pedido, name='cancelar_pedido'),
     path('cambiar_cantidad/<int:producto_id>/', views.cambiar_cantidad, name='cambiar_cantidad'),
+    path('carrito/', views.ver_carrito, name='ver_carrito'),
+    path('eliminar_producto/<int:producto_id>/', views.eliminar_producto, name='eliminar_producto'),
+    path('borrar_todo/', views.borrar_todo, name='borrar_todo'),
+    path('cancelar_todo/', views.cancelar_todo, name='cancelar_todo'),  # Nueva URL
+
 ]
