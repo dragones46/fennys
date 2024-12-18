@@ -6,36 +6,61 @@
 
 {% block content %}
 
-    <div class="container mt-4">
-        <h1 class="text-center">Lista de Productos</h1>
-        <div class="row">
-            {% for producto in productos %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <img src="{{ producto.foto.url }}" class="card-img-top" alt="{{ producto.nombre }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ producto.nombre }}</h5>
-                            <p class="card-text">Categoría: {{ producto.categoria }}</p>
-                            <p class="card-text">Precio: ${{ producto.precio | floatformat:0 | intcomma }}</p>
-                            <p class="card-text">Inventario: {{ producto.inventario | intcomma }}</p>
-                            {% if producto.inventario == 0 %}
-                                <p class="text-danger">El producto está agotado.</p>
-                            {% elif producto.inventario <= 5 %}
-                                <p class="text-warning">El producto se está agotando.</p>
-                            {% endif %}
-                            <div class="d-flex justify-content-center align-items-center">
-                                <form action="{% url 'agregar_al_carrito' producto.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button class="btn btn-primary" type="submit" {% if producto.inventario == 0 %}disabled{% endif %}>
-                                        Agregar al Carrito
-                                    </button>
-                                </form>
-                            </div>
+<div class="container mt-4">
+    <h1 class="text-center">Lista de Productos</h1>
+
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-md-12 text-center">
+            <h5>Filtrar por categoría</h5>
+            <select id="categoryFilter" class="form-select" onchange="filtrarPorCategoria()">
+                <option value="">Todas las categorías</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if categoria_seleccionada and categoria.id == categoria_seleccionada.id %}selected{% endif %}>
+                        {{ categoria.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row" id="productList">
+        {% for producto in productos %}
+            <div class="col-md-3 mb-4 product-item" data-category="{{ producto.categoria.id }}">
+                <div class="card">
+                    <img src="{{ producto.foto.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text">Categoría: {{ producto.categoria.nombre }}</p>
+                        <p class="card-text">Precio: ${{ producto.precio | floatformat:0 | intcomma }}</p>
+                        <p class="card-text">Inventario: {{ producto.inventario | intcomma }}</p>
+                        {% if producto.inventario == 0 %}
+                            <p class="text-danger">El producto está agotado.</p>
+                        {% elif producto.inventario <= 5 %}
+                            <p class="text-warning">El producto se está agotando.</p>
+                        {% endif %}
+                        <div class="d-flex justify-content-center align-items-center">
+                            <form action="{% url 'agregar_al_carrito' producto.id %}" method="post" class="add-to-cart-form">
+                                {% csrf_token %}
+                                <button class="btn btn-primary add-to-cart" type="submit" {% if producto.inventario == 0 %}disabled{% endif %} data-product-id="{{ producto.id }}">
+                                    Agregar al Carrito
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
+</div>
+
+<script>
+    function filtrarPorCategoria() {
+        var categoryId = document.getElementById("categoryFilter").value;
+        var baseUrl = "{% url 'productos' %}";
+        var url = categoryId ? `${baseUrl}categoria/${categoryId}/` : baseUrl;
+        window.location.href = url;
+    }
+</script>
 
 {% endblock %}

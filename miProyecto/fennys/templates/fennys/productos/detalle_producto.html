@@ -1,0 +1,32 @@
+{% extends 'fennys/barnav.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block titulo %}Detalle del Producto{% endblock %}
+
+{% block content %}
+<!-- Detalle Producto Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-6" style="min-height: 500px;">
+                <div class="position-relative h-100">
+                    <img class="position-absolute w-100 h-100" src="{{ producto.foto.url }}" style="object-fit: cover;">
+                </div>
+            </div>
+            <div class="col-lg-6 pt-5 pb-lg-5">
+                <div class="hours-text bg-light p-4 p-lg-5 my-lg-5" style="max-width: 100%; word-wrap: break-word;">
+                    <a class="text-decoration-none" href="{% url 'productos' %}?cat={{ producto.categoria.id }}">
+                        <h6 class="d-inline-block text-white text-uppercase bg-primary py-1 px-2"><i class="fas fa-arrow-left"></i> {{ producto.categoria }}</h6>
+                    </a>
+                    <h1 class="mb-4">{{ producto.nombre }}</h1>
+                    <p style="max-width: 100%; word-wrap: break-word;">{{ producto.descripcion }}</p>
+                    <h5 style="color: red;"><strong>${{ producto.precio|intcomma }}</strong></h5>
+                    <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Volver a la lista de productos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Detalle Producto End -->
+{% endblock %}

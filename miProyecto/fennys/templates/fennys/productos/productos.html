@@ -7,21 +7,19 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="row">
-        {% for producto in productos %}
-        <div class="col-md-4 mb-4">
-            <div class="card ">
-                <!-- Aquí se utiliza el campo imagen.url para obtener la URL de la imagen -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for categoria in categorias %}
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img src="{{ categoria.foto.url }}" class="card-img-top" alt="Imagen de {{ categoria.nombre }}">
                 <div class="card-body">
-                    <img src="{{ producto.foto.url }}" class="card-img-top" alt="Imagen de {{ producto.nombre }}">
-                    <h5 class="card-title">{{ producto.nombre }}</h5>
-                    <p class="card-text">{{ producto.descripcion }}</p>
-                    <p class="card-text">Precio: ${{ producto.precio | floatformat:0 | intcomma }}</p>
-                    <a href="/" class="btn btn-primary">Ver más</a>
+                    <h5 class="card-title" style="color: red;">{{ categoria.nombre }}</h5>
+                    <p class="card-text">{{ categoria.descripcion|truncatewords:10 }}</p>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
 {% endblock %}

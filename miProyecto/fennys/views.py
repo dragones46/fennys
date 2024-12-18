@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Usuario, Role, Producto, Pedido, DetallePedido
+from .models import *
 from .crypt import hash_password, verify_password
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -10,13 +10,44 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+
 def index(request):
     productos = Producto.objects.all()
-    return render(request, 'fennys/index.html', {'productos': productos})
+    
+    # Obtener el carrito de la sesión
+    carrito = request.session.get('carrito', {})
+
+    # Calcular el total del carrito
+    total_carrito = 0
+    cantidad_total = 0
+    for item in carrito.values():
+        total_carrito += int(item['cantidad']) * float(item['precio'])
+        cantidad_total += int(item['cantidad'])
+
+    return render(request, 'fennys/index.html', {
+        'productos': productos,
+        'carrito': carrito,
+        'total_carrito': total_carrito,
+        'cantidad_total': cantidad_total  # Pasar la cantidad total al contexto
+    })
 
 def productos(request):
-    productos_disponibles = Producto.objects.all()
-    return render(request, 'fennys/productos/productos.html', {'productos': productos_disponibles})
+    productos = Producto.objects.all()
+    categorias = Categoria.objects.all()
+
+    # Obtener el carrito de la sesión
+    carrito = request.session.get('carrito', {})
+
+    # Calcular el total del carrito
+    total_carrito = 0
+    cantidad_total = sum(item['cantidad'] for item in carrito.values())
+
+    return render(request, 'fennys/productos/productos.html', {
+        'productos': productos,
+        'categorias': categorias,
+        'cantidad_total': cantidad_total  # Pasar la cantidad total al contexto
+    })
+
 
 def contacto(request):
     if request.method == 'POST':
@@ -25,7 +56,7 @@ def contacto(request):
         correo = request.POST.get('correo')
         mensaje = request.POST.get('mensaje')
         tipo_mensaje = request.POST.get('tipo_mensaje')
-        
+
         # Definir el asunto con el tipo de mensaje
         asunto = f"{tipo_mensaje}: Nuevo mensaje de contacto de {nombre}"
 
@@ -60,7 +91,7 @@ def contacto(request):
                     fail_silently=False,
                     html_message=mensaje_correo  # Esto permite el envío de HTML en el correo
                 )
-                
+
                 # Mensaje de éxito
                 messages.success(request, '¡Gracias por tu mensaje! Nos pondremos en contacto pronto.')
                 return redirect('contacto')  # Redirige a la vista de contacto
@@ -73,11 +104,36 @@ def contacto(request):
             messages.error(request, 'Por favor, llena todos los campos correctamente.')
             return redirect('contacto')
     else:
+        # Obtener el carrito de la sesión
+        carrito = request.session.get('carrito', {})
+
+        # Calcular el total del carrito
+        total_carrito = 0
+        cantidad_total = 0
+        for item in carrito.values():
+            total_carrito += int(item['cantidad']) * float(item['precio'])
+            cantidad_total += int(item['cantidad'])
+
         # Si la solicitud es GET, solo se muestra el formulario vacío
-        return render(request, 'fennys/contacto/contacto.html')
+        return render(request, 'fennys/contacto/contacto.html', {
+            'carrito': carrito,
+            'total_carrito': total_carrito,
+            'cantidad_total': cantidad_total  # Pasar la cantidad total al contexto
+        })
+
 
 def lista_productos(request):
-    productos = Producto.objects.all()
+    # Obtener todas las categorías para el filtro
+    categorias = Categoria.objects.all()
+    categoria_id = request.GET.get('categoria')
+
+    # Filtrar productos según la categoría seleccionada
+    if categoria_id:
+        productos = Producto.objects.filter(categoria_id=categoria_id)
+        categoria_seleccionada = get_object_or_404(Categoria, id=categoria_id)
+    else:
+        productos = Producto.objects.all()
+        categoria_seleccionada = None
 
     # Obtener el carrito de la sesión
     carrito = request.session.get('carrito', {})
@@ -87,14 +143,17 @@ def lista_productos(request):
     for item in carrito.values():
         total_carrito += int(item['cantidad']) * float(item['precio'])
 
-    print(carrito)  # Para depurar el contenido del carrito
+    # Calcular la cantidad total de productos en el carrito
+    cantidad_total = sum(item['cantidad'] for item in carrito.values())
 
     return render(request, 'fennys/productos/lista_productos.html', {
         'productos': productos,
+        'categorias': categorias,
+        'categoria_seleccionada': categoria_seleccionada,
         'carrito': carrito,
-        'total_carrito': total_carrito
+        'total_carrito': total_carrito,
+        'cantidad_total': cantidad_total  # Pasar la cantidad total al contexto
     })
-
 
 def agregar_al_carrito(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
@@ -105,7 +164,7 @@ def agregar_al_carrito(request, producto_id):
 
     # Verificar el inventario
     if producto.inventario <= 0:
-        messages.error(request, f"{producto.nombre} está agotado.")
+        messages.warning(request, f"{producto.nombre} está agotado.")
         return redirect('lista_productos')
 
     # Agregar el producto al carrito
@@ -117,13 +176,17 @@ def agregar_al_carrito(request, producto_id):
             'precio': str(producto.precio),
             'cantidad': 1,
             'foto': producto.foto.url if producto.foto else None,
-            'subtotal': float(producto.precio),  # Inicializa el subtotal
-            'inventario': producto.inventario  # Agregar el inventario al carrito
+            'subtotal': float(producto.precio),
+            'inventario': producto.inventario
         }
 
     # Guardar el carrito en la sesión
     request.session.modified = True
+
+    # Calcular la cantidad total de productos en el carrito
+    cantidad_total = sum(item['cantidad'] for item in request.session['carrito'].values())
     messages.success(request, f"{producto.nombre} ha sido agregado al carrito.")
+    
     return redirect('lista_productos')
 
 
@@ -149,6 +212,7 @@ def cancelar_producto(request, producto_id):
     else:
         messages.warning(request, "El carrito está vacío.")
     return redirect('ver_carrito')
+
 
 def cambiar_cantidad(request, producto_id):
     if request.method == 'POST':
@@ -339,15 +403,18 @@ def ver_carrito(request):
 
     # Calcular el total del carrito
     total_carrito = 0
+    cantidad_total = 0
     for item in carrito.values():
         # Asegurarse de que 'subtotal' siempre esté presente
         if 'subtotal' not in item:
             item['subtotal'] = float(item['precio']) * item['cantidad']  # Calcularlo si no existe
         total_carrito += item['subtotal']  # Actualizar el total
+        cantidad_total += item['cantidad']  # Actualizar la cantidad total
 
     return render(request, 'fennys/productos/carrito.html', {
         'carrito': carrito,
-        'total_carrito': total_carrito
+        'total_carrito': total_carrito,
+        'cantidad_total': cantidad_total
     })
 
 def borrar_todo(request):
@@ -381,3 +448,27 @@ def cancelar_todo(request):
     else:
         messages.warning(request, "El carrito está vacío.")
     return redirect('ver_carrito')
+
+def filtrar_por_categoria(request, categoria_id=None):
+    # Obtener todas las categorías para el filtro
+    categorias = Categoria.objects.all()
+
+    # Filtrar productos según la categoría seleccionada
+    if categoria_id:
+        productos = Producto.objects.filter(categoria_id=categoria_id)
+        categoria_seleccionada = get_object_or_404(Categoria, id=categoria_id)
+    else:
+        productos = Producto.objects.all()
+        categoria_seleccionada = None
+
+    return render(request, 'fennys/productos/lista_productos.html', {
+        'productos': productos,
+        'categorias': categorias,
+        'categoria_seleccionada': categoria_seleccionada,
+    })
+
+
+def detalle_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    categorias = Categoria.objects.all()
+    return render(request, 'fennys/productos/detalle_producto.html', {'producto': producto, 'categorias': categorias})
